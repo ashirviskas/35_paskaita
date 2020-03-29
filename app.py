@@ -2,7 +2,7 @@ import os
 from flask import Flask, render_template, redirect, url_for, flash, request
 from flask_sqlalchemy import SQLAlchemy
 from flask_bcrypt import Bcrypt
-from flask_login import LoginManager, current_user, logout_user, login_user, UserMixin
+from flask_login import LoginManager, current_user, logout_user, login_user, UserMixin, login_required
 import forms
 
 basedir = os.path.abspath(os.path.dirname(__file__))
@@ -65,10 +65,15 @@ def atsijungti():
     return redirect(url_for('index'))
 
 
-# @app.route("/account")
-# @login_required
-# def account():
-#     return render_template('account.html', title='Account')
+@app.route("/paskyra")
+@login_required
+def account():
+    return render_template('paskyra.html', title='Paskyra')
+
+@app.route("/irasai")
+@login_required
+def irasai():
+    return render_template('irasai.html', title='Įrasai')
 
 
 @app.route("/")
