@@ -73,7 +73,7 @@ def account():
 @app.route("/irasai")
 @login_required
 def irasai():
-    return render_template('irasai.html', title='Įrasai')
+    return render_template('irasai.html', title='Įrašai')
 
 
 @app.route("/")
