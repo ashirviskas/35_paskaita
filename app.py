@@ -53,7 +53,6 @@ class Vartotojas(db.Model, UserMixin):
     el_pastas = db.Column("El. pašto adresas", db.String(120), unique=True, nullable=False)
     nuotrauka = db.Column(db.String(20), nullable=False, default='default.jpg')
     slaptazodis = db.Column("Slaptažodis", db.String(60), unique=True, nullable=False)
-    is_admin = db.Column()
 
 class Irasas(db.Model):
     __tablename__ = "irasas"
