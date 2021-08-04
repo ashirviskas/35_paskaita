@@ -23,9 +23,16 @@ login_manager = LoginManager(app)
 login_manager.login_view = 'prisijungti'
 login_manager.login_message_category = 'info'
 
+
+@login_manager.user_loader
+def load_user(vartotojo_id):
+    return Vartotojas.query.get(int(vartotojo_id))
+
+
 class ManoModelView(ModelView):
     def is_accessible(self):
         return current_user.is_authenticated and current_user.el_pastas == "el@pastas.lt"
+
 
 def save_picture(form_picture):
     random_hex = secrets.token_hex(8)
@@ -46,6 +53,7 @@ class Vartotojas(db.Model, UserMixin):
     el_pastas = db.Column("El. pašto adresas", db.String(120), unique=True, nullable=False)
     nuotrauka = db.Column(db.String(20), nullable=False, default='default.jpg')
     slaptazodis = db.Column("Slaptažodis", db.String(60), unique=True, nullable=False)
+    is_admin = db.Column()
 
 class Irasas(db.Model):
     __tablename__ = "irasas"
@@ -57,12 +65,8 @@ class Irasas(db.Model):
     vartotojas = db.relationship("Vartotojas", lazy=True)
 
 admin = Admin(app)
-# admin.add_view(ModelView(Irasas, db.session))
+admin.add_view(ManoModelView(Irasas, db.session))
 admin.add_view(ManoModelView(Vartotojas, db.session))
-
-@login_manager.user_loader
-def load_user(vartotojo_id):
-    return Vartotojas.query.get(int(vartotojo_id))
 
 
 @app.route("/registruotis", methods=['GET', 'POST'])
@@ -95,11 +99,11 @@ def prisijungti():
             flash('Prisijungti nepavyko. Patikrinkite el. paštą ir slaptažodį', 'danger')
     return render_template('prisijungti.html', title='Prisijungti', form=form)
 
+
 @app.route("/atsijungti")
 def atsijungti():
     logout_user()
     return redirect(url_for('index'))
-
 
 
 @app.route("/paskyra", methods=['GET', 'POST'])
@@ -186,6 +190,13 @@ def balance():
 @app.route("/")
 def index():
     return render_template("index.html")
+
+
+@app.route("/admin")
+@login_required
+def admin():
+    return redirect(url_for(admin))
+
 
 if __name__ == '__main__':
     app.run(host='127.0.0.1', port=8000, debug=True)
